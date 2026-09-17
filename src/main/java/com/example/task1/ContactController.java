@@ -1,10 +1,17 @@
 package com.example.task1;
 
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
 public class ContactController {
+
+    private final ContactRepository contactRepository;
+
+    public ContactController(ContactRepository contactRepository) {
+        this.contactRepository = contactRepository;
+    }
 
     @PostMapping("/contact")
     public String submitContact(
@@ -12,12 +19,17 @@ public class ContactController {
             @RequestParam String email,
             @RequestParam String message) {
 
-        System.out.println("========== CONTACT FORM ==========");
-        System.out.println("Name    : " + name);
-        System.out.println("Email   : " + email);
-        System.out.println("Message : " + message);
-        System.out.println("==================================");
+        Contact contact = new Contact(name, email, message);
+
+        contactRepository.save(contact);
+
+        System.out.println("Contact saved in database");
 
         return "Message submitted successfully!";
+    }
+
+    @GetMapping("/contacts")
+    public List<Contact> getAllContacts() {
+        return contactRepository.findAll();
     }
 }
